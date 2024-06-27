@@ -8,14 +8,8 @@ import { USER_ROLE } from './auth.constant'
 const router = express.Router()
 
 router.post(
-  '/register',
-  validateRequest(AuthValidation.registrationValidationSchema),
-  AuthController.registerUser,
-)
-
-router.post(
   '/login',
-  validateRequest(AuthValidation.loginValidationSchema),
+  // validateRequest(AuthValidation.loginValidationSchema),
   AuthController.loginUser,
 )
 

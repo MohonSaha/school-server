@@ -23,19 +23,19 @@ import { UserServices } from './user.service'
 //   })
 // })
 
-// Create faculty account
-// const createAcademicFaculty: RequestHandler = catchAsync(async (req, res) => {
-//   const { password, faculty: payLoad } = req.body
+// Create teacher account
+const createFaculty = catchAsync(async (req, res) => {
+  const { password, faculty: payLoad } = req.body
 
-//   const result = await UserServices.createFacultyIntoDB(password, payLoad)
+  const result = await UserServices.createFacultyIntoDB(password, payLoad)
 
-//   sendResponse(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'Academic faculty is created successfully',
-//     data: result,
-//   })
-// })
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Teacher is created successfully',
+    data: result,
+  })
+})
 
 // Create admin account
 const createAdmin = catchAsync(async (req, res) => {
@@ -79,7 +79,7 @@ const chnageStatus = catchAsync(async (req, res) => {
 
 export const userControllers = {
   //   createStudent,
-  //   createAcademicFaculty,
+  createFaculty,
   createAdmin,
   //   getMe,
   chnageStatus,

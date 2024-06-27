@@ -19,12 +19,12 @@ const router = express.Router()
 //   userControllers.createStudent,
 // )
 
-// router.post(
-//   '/create-faculty',
-//   auth(USER_ROLE.admin, USER_ROLE.superAdmin),
-//   validateRequest(createFacultyValidationSchema),
-//   userControllers.createAcademicFaculty,
-// )
+router.post(
+  '/create-teacher',
+  // auth(USER_ROLE.admin, USER_ROLE.superAdmin),
+  // validateRequest(createFacultyValidationSchema),
+  userControllers.createFaculty,
+)
 
 router.post(
   '/create-admin',

@@ -2,11 +2,13 @@ import mongoose from 'mongoose'
 import config from '../../config'
 import { TAdmin } from '../admin/admin.interface'
 import { TUser } from './user.interface'
-import { generateAdminId } from './user.utils'
+import { generateAdminId, generateFacultyId } from './user.utils'
 import { User } from './user.model'
 import AppError from '../../error/appError'
 import httpStatus from 'http-status'
 import { Admin } from '../admin/admin.model'
+import { Faculty } from '../faculty/faculty.model'
+import { TFaculty } from '../faculty/faculty.interface'
 
 // admin creation
 const createAdminIntoDB = async (password: string, payload: TAdmin) => {
@@ -58,6 +60,56 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 }
 
+// faculty creation
+const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+  // create a user object
+  const userData: Partial<TUser> = {}
+
+  //if password is not given , use deafult password
+  userData.password = password || (config.default_password as string)
+
+  //set faculty role
+  userData.role = 'faculty'
+  // set faculty email
+  userData.email = payload.email
+
+  const session = await mongoose.startSession()
+  try {
+    session.startTransaction()
+    //set  generated id
+    userData.id = await generateFacultyId()
+
+    // create a user (transaction-1)
+    const newUser = await User.create([userData], { session }) // array
+
+    //create a faculty
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user')
+    }
+    // set id , _id as user
+    payload.id = newUser[0].id
+    payload.user = newUser[0]._id //reference _id
+
+    // create a faculty (transaction-2)
+
+    const newFaculty = await Faculty.create([payload], { session })
+
+    if (!newFaculty.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create teacher!')
+    }
+
+    await session.commitTransaction()
+    await session.endSession()
+
+    return newFaculty
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    await session.abortTransaction()
+    await session.endSession()
+    throw new Error(err)
+  }
+}
+
 // // Get user data accouding to role
 // const getMe = async (userId: string, role: string) => {
 //   let result = null
@@ -81,7 +133,7 @@ const chnageStatus = async (id: string, payload: { status: string }) => {
 
 export const UserServices = {
   //   createStudentIntoDB,
-  //   createFacultyIntoDB,
+  createFacultyIntoDB,
   createAdminIntoDB,
   //   getMe,
   chnageStatus,

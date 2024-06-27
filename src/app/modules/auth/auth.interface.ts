@@ -12,7 +12,6 @@ export interface IUser {
   email: string
   password: string
   passwordChangeAt?: Date
-  passwordChangeHistory?: [IPasswordHistory]
   role: 'user' | 'admin'
 }
 
